@@ -1,0 +1,153 @@
+Nature photonics notes
+[0 abstract 150]
+
+Optogenetics is typically used to drive excitable cells such as those found in the heart and brain in order to control and study their behavior. Interconnected excitable cells can form spatially distributed systems that propagate undamped signals which generating a wide range of macroscopic spatiotemporal patterns. Here we use optogenetic tools to modulate pattern formation in cultured sheets of cardiac cells by controlling conduction velocity, spiral wave chirality and wave direction.
+
+
+[1 OPTOGENETICS INTRO]
+Optogenetics encorporates bacterial optsins into mammalian excitable cells to allow precise control of thier activation using light. These tools are most often used as high resolution stimulating electrodes that can be spatially targeted to either map connections in excitable cells or genetically targeted activate specific cell types to change behavior. Optogenetics has revolutionized the neurosciences, where light is used to map neural circuits and control circuits and even intact animals. Cardiac optogenetic applications the study of arrhythmogenesis by disruption of normal rhythm using short pulses of light, generation of spontaneous pacemaking activity by a constant low intensity illumination , and cardioversion (distruption of self sustaining reentrant activity) by applications of high intenstiy light. 
+
+[2 EXCITABLE MEDIA INTRO]
+More generally, connected excitable cells form an excitable medium. Excitable media is a spatially distributed dynamical system  where each element can respond to a small stimulus by displaying a large transient change in state, which in turn can trigger similar transients in its neighbours, resulting in a propagating wave. Excitable media generate a rich range of macroscopic spatial patterns, many of which are universal in that they have similar characteristics independent of the underlying physical system. Possibly the most  well studied example of an excitable medium is the Belouzov Zhabotinski (BZ)[x] chemical reaction, which supports target, planar, and self exciting reentrant spiral waves of activity[x]. Light sensitive variants of the BZ reaction have been used to study how waves are modulated by external perturbations[x]. Understading activation patterns is critically important in living systems, as they can often underpin basic physiological processes as well as disease states.
+Propagating planar waves drive contraction in the heart, and self exciting spirals of activity are responsible for a wide range of potentially deadly arrhythmias. In the brain, a slowly travelling depolarization wave ('spreading depression')  causes migrains by distrupting ion homeostasis. However, tools for manipulating waves in living tissue are currently limited: for example, in  cardiac systems waves can be initiated and terminated using electrical stimulation, but fine spatial control of wave location, wave speed and spatial pattern is currently out of reach.  Tools that allow control  of wave properties in biological excitable media have great potential to increase our understanding of pattern formation in health and disease.
+
+
+[3 DYE FREE IMAGING ]
+We use a dye free imaging modality that allows mapping of excitation waves. The key advantage in the context of optogenetics is that 1) we do not have to use fluorescent dyes which avoids concerns over overlapping wavelengths with optogenetic stimulation, and 2) we can directly observe the effects of high intensity light on our sample without saturating the detection camera. Second, we use a DMD to precisely control the shape and timing of the light pulse.
+
+
+[4 LINEAR EXAMPLE - REFRACTORY/RECOVERY TIME CONTROL]
+ Excitable media propagate waves from a point source in all directions.  By controlling the tissues refractory state we can cause tissue to propagate signals in one direction only.  [xx] showed that high levels of light can be used to depolarise tissue resulting in cardioversion. here, change the timing and the location of the depolarising pusle to set up a sharp refractory gradient that favours unidirectional propagation. We leverage the fact that depolarized tissue is refractory. Since light can keep tissue depolarised until it is released, we can effectivey control the refractory state of the tissue precicely both spatially and temporally.
+
+[5 LINEAR EXAMPLE - DEPOLARIZATION/CONDUCTION VELOCITY CONTROL]
+ We also can precisely control conduction velocity by using low levels of depolarizing light. The conduction velocity of an excitable media depends on many factors, including the diffusion coefficient and space constant of system.
+ In cardiac preparations, waves are propagated when one cell causes its excitable neighbours to reach threshold. By depolarizing tissue, the cells are closer to threshold, and therefore fire more quickly than non-depolarised tissue.  We note that continuous application of low levels of light results in increased pacemaking activty. Here we apply light while a single pulse is propagating. We are able to controllably increase CV in either direction on the tissue by applying light to the left (fig xx) or right (fig xx) of the stimulus site. We also were able to precicely control the amount of CV increase by increasing the light level (fig xx)
+
+[6 SPIRAL WAVE CHIRALITY]
+ We are able to control spiral wave dynamics in culture. Spiral waves are (commonly found in all excitable media, slime mold, BZ, brain and heart). The control of spiral waves is important both as a tool for undestanding the underlying process emmergent of pattern formation, but also has direct application in treatment of deadly cardiac arrhythmias. Recently, XXX has shown that its possible to abolish spiral wave activity by delivering a large pulse of depolarizing light over the entire tissue. Here we show that spiral wave chirality can be contolled by applying a counterrotating spiral wave of shaped light.
+
+
+[7 Conclusions]
+
+[Any point in the cycle.
+The spiral chirality is changed, but the wave is otherwise unchanged. The spiral drifts to a preferred location in the tissue after being imposed.]
+
+[what I haven't shown is the ability to use the fact that unlike other groups we can see this effect at high resolution. what can i say? We can see this if we plot it on a log scale]
+
+[two light levels. The first depolarizes the tissue. By rotating the wave faster than the intrinsic wave speed, the tissue is depolarized so that there is refractory tissue gradient. The spiral turns for 1 3/4 turns to ensure that all waves are reset. By applying a low (excitatory) wave in the front,helps with tissue excitation when the wave is]
+
+
+
+In most cases, optogenetic tools are used to depolarize a cell so that it fires an action potential. Here we apply shapes to change the dyna
+
+cardiac differences: global appliation of high intensity light results in cardioversion. This is analogous to applying a diffibrillatory shock.
+Pacemaking current is induced by applying low levels of light to depolarise the tissue. [on the face of it, its similar to my method of increasing speed, but in my case its a transient pulse of light]
+
+
+[methods: dye free methods to record ]
+
+
+
+ Figure 1: description of method + one example
+           redo example to avoid double hump?
+
+
+ Figure 2: linear examples. Controlling direction and wave speed
+
+
+ Figure 3: chirality change
+
+ angles: Optogenetics has been used for....
+
+         Stimulation. The main difference is that in this case we are using it in a way that is fundamentally different than an electrode.
+
+         The most important difference is that we not using it for an all or none response (wave speed). No, we do sometimes
+
+         how its used: basically as an electrode. in the case of stimululus (point locations on the monolayer) or cardioversion (similar to a large applied electric field) the community uses the tool as a spatially controlled electrode. The system is stimulated.
+
+         Here we use it differently (figure 2a: releasing light in a spatially controlled fashion to control excitability; figure 2b: applying low levels of light to change wave velocity; figure 3: dynamically imposing a spatial pattern - in this case shaped inhibitory and excitatory light - to change the chirality of a spiral wave.)
+
+
+  1) Why unidirectional propagation is imporant .
+     i) basic tenet of arrhythmia research
+     ii) excitable media propagate waves in all directions
+     iii) in a typical example (cardiac), a wave front is generated and then a second wave is initiated so that part of the wave propagates into refractory tissue. In this case we are pre-treating the the preparation with high light levels. One one hand its roughly similar. However, in the conventional case, the wave propagates into a refractory gradient. In our case, the state of the tissue is under greater experimental control.
+     iv) it also opens the possibility of 2D changes (two wave propagating in oposite directions? how would this work. Global, followed by to regions with different ramps)
+     iv) less important is that we are in control of the location and direction, without having to take into account wave speed to time the second pulse.
+     v) is the window larger? what is the vulnerable period? future experiments can measure this
+
+   2) wavev speed is important.
+       in cardiac context, cv, with apd controls arrhythmic potential. this would allow us to experimentally test _____
+       experimentally dial in CV in a spatially controlled way.
+
+   BZ: the light is inhibitory (cut spiral wave) although you can speed up a wave by local heating. Its not clear whether its always inhibitory. some wavelengths are excitatory?
+
+in the light sensitive bz reaction the ruthenium catalyst is excited by blue light and reacts bromomalonic acid to produce bromine, which is an inhibitor of autocatalysis. 
+
+" Andrew Adamatzky, Benjamin De Lacy Costello, Tetsuya Asai, Reaction Diffusion Computers,Elsevier, 5 Oct 2005"
+
+why light increases conduction velocity. 1) it depolarizes the tissue slightly. the conduction velocity depends on charging a neighbour. The rate of rise to threshold depends on the difference between the two elements, and the capacitance of the charged cell
+
+
+
+square root of diffusion coefficient divided by the upstroke time
+upstoke velocity is time mv/ms (100mv)
+
+
+
+why the chirality change is important.
+  general discussion on spiral waves. Als
+
+how to slow a wave.
+  blank pulse followed by a wave
+
+ Most elegant way.
+   low intenstiy pulse followed by a wave -> wave speed increase
+   high intensity pulse followed by a wave - > wave speed decrease
+
+Uni directional. Change refractory state in a spatially precise way. Normally able to set up a refractory gradient by sending in a wave, or globally by shock. Here, we demonstrate the ability to define refractoriness spatially. Fig 2a....
+Is a gradient that allows wave propagation in o one direction only. It is analogous to triggering a wave in the wake of a travelling wave but here we do not need to initiate a wave or have prior knowledge of wave front location.
+
+Conduction velocity control. CV is normally either controllable by pharmacological means, where CV can be increased (ref) or deceased(ref) by changing biophusical properties of the tissue or by manipulating the recovery time of the tissue.
+In both cases precise spatial control is difficult to achieve. Here we demonstrate precise spatial control of cv by changing the resting potential of the tissue. The experimental protocol is similar to what was used to control automaticity, but here the tissue is depolarised for a short time period during conduction. We are able to increase CV in either the left out right directions. Further, as the light level is under precise control, we can increase CV very precisely. 
+
+Spiral waves are observed in a wide range of physical and biological systems.  Thier creation and termination is extensively studied, and has particular importance in cardiac field as they underpin a variety of deadly arrhythmias. In addition, the chirality of a spiral is an important emergent property that has been investigated in a wide range of physical and biological systems. Here we demonstrate the ability to precisely control spiral wave chirality using optogenetic tools by overdriving an existing spiral with a counter rotating spiral with a higher frequency. The imposed spiral is comprised of two intensities: the leading edge of the spiral is excitatory while the tail is at a high enough intensity to depolarise excited tissue. The higher intensity light acts to reset existing wave fronts as well as secondary waves generated by spillover light as it travels faster than the propagation speed of the tissue. The low intensity light ensures that tissue will be excited in the final frame. The imposed spiral generates a refractory gradient that results in a spiral wave with the same chirality when the light is turned off. Spiral wave chirality reversal is repeated four times (at two second intervals). Spirals  do not converge to the same shape as the imposed spiral, but are observed to travel to the same approximate location (where the location depends on chirality) after a few rotations. It is also interesting to note that spatial control appears to be independent of the current phase if the spiral. Further  study is required...
+
+
+We are able to observe both the original and overdriving pattern in the same image
+
+
+Things that are possible with electrodes:
+ S1 S2
+ multiple rapid shocks
+ initiation of a pulse in the wake of a traveling wave
+ These depend on setting up a refractory gradient by propagating a wave through the excitable media.
+ In my case, I'm stamping a refractory gradient on the tissue
+
+
+
+ current way of probing tissue is by changing the recovery time, or refractory gradient of the tissue. The restitution curve is the one of the most commonly used protocols.... that measure how conduction velocity and action potential shape change as a function of the tissues recovery time.
+ Tissue recovery time can be altered using electrodes by initiating a wave. This limits....
+
+
+ the idea of a one shot recovery curve.
+  send a planar wave into a recently released tissue. Global
+
+
+
+paragraphs
+ Optogenetics is....
+   neurosciences, currently used to target specific nerves
+
+ Excitable media
+   importance of studying wave events and emmergent behaviors
+
+ Cardiac tissue
+   Typically done by stimulating with an electrode, and effectively altering the recovery time
+
+ Light is being used to control the state of cells (either by depolarizing the tissue or by changing its recovery time). Although this has been done using other means, photonics allows unpresidented spatial and temporal control. The use of light to modulate cell state has been demonstrated in three contexts - unidirectional block, condocution velocity alteration, and chirality change. Optogenetics offers researchers interested in wave dynamics a new set of tools to investigate wave dynamics and pattern formation in biological systems.
+ 
+
+ key points *alter polarization state or recovery time
+            *in addition to stimulating the tissue
+

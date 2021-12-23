@@ -1,0 +1,54 @@
+package gvdecoder;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.awt.geom.GeneralPath;
+import com.sun.image.codec.jpeg.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.net.URLConnection;
+
+public class iFrame extends JInternalFrame implements InternalFrameListener{
+
+  public aFrame aframe;
+  
+  public iFrame(aFrame aframe){
+   super(aframe.title, true,true,true,true);
+   this.aframe=aframe;
+   aframe.gv.desktop.add(this);
+   show();
+   }
+   
+   public void internalFrameClosing(InternalFrameEvent e) {
+    aframe.aFrameClosing();
+   }
+   
+   public void internalFrameClosed(InternalFrameEvent e) {
+     aframe.aFrameClosed();
+   }
+   
+   public void internalFrameOpened(InternalFrameEvent e) {
+    aframe.aFrameOpened(); 	
+   }
+   
+   public void internalFrameIconified(InternalFrameEvent e) {
+    aframe.aFrameIconified();
+   }
+   
+   public void internalFrameDeiconified(InternalFrameEvent e) {
+    aframe.aFrameDeiconified();
+   
+   }
+   
+   public void internalFrameActivated(InternalFrameEvent e) {
+     aframe.aFrameActivated();
+   }
+   
+   public void internalFrameDeactivated(InternalFrameEvent e) {
+     aframe.aFrameDeactivated();
+   }
+}

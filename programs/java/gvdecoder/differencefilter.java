@@ -1,0 +1,21 @@
+package gvdecoder;
+
+public class differencefilter implements ViewerFilter{
+
+ int [] lastarray;
+
+ public void run(Viewer2 vw,int[] arr){
+   int i;
+   int val;
+   if (lastarray==null){ lastarray=new int[arr.length];}
+    for (i=0;i<arr.length;i++) lastarray[i]=arr[i];
+
+    for ( i=0;i<arr.length;i++){
+     val=arr[i]-lastarray[i];
+     if (val<0) val=val*-1;
+     arr[i]=val;
+
+    }
+ }
+
+}

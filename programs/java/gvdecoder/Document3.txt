@@ -1,0 +1,65 @@
+package gvdecoder;
+
+public class NeoGui extends JPanel{
+
+TreeGui treegui;
+
+JPanel top;
+
+JPanel bot;
+
+public NeoGui(){
+
+  setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+  top=new JPanel();
+  top.setLayout(new GridLayout(5,3));
+  top.add(new JLabel("param"));
+  top.add(new JLabel("set"));
+  top.add(new JLabel("min"));
+  top.add(new JLabel("max"));
+  top.add(new JLabel("value"));
+  top.add(new JLabel("exposure"));
+  top.add(new JTextField());
+  top.add(new JLabel("0"));
+  top.add(new JLabel("1000"));
+  top.add(new JLabel("0.1");
+  top.add(new JLabel("frames/s"));
+  top.add(new JTextField());
+  top.add(new JLabel("1"));
+  top.add(new JLabel("50"));
+  top.add(new JLabel("10");
+  this.add(top);
+  treegui=new TreeGui();
+  this.add(treegui);
+  bot=new JPanel();
+  bot.setLayout(new GridLayout(4,1));
+  bot.add(new JButton("focus"));
+  bot.add(new JLabel("#frames"));
+  bot.add(new JButton("record"));
+  this.add(bot);
+
+}
+
+private static void createAndShowGUI() {
+        if (useSystemLookAndFeel) {
+            try {
+                UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                System.err.println("Couldn't use system look and feel.");
+            }
+        }
+
+        //Create and set up the window.
+        JFrame frame = new JFrame("NeoGui");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Add content to the window.
+        frame.add(new NeoGui());
+
+        //Display the window.
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+}

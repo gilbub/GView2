@@ -1,0 +1,994 @@
+/*
+ * Swing version.
+ */
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
+import java.awt.image.*;
+import java.awt.image.renderable.*;
+import JSci.maths.*;
+import JSci.maths.wavelet.*;
+
+/*
+ Paints a graph from a file.
+ For now, assume the data is a series of ints, not scaled.
+ The code should determine the amount of room it has, and
+ generate a second x and y array that contains a drawable line.
+ It uses drawPolyLine(arrayx, arrayy, length)
+ */
+
+
+class NavigatorGraph extends JPanel implements KeyListener, FrameListener{
+
+
+
+    Viewer2 vw;
+    String filename;
+    JPopupMenu popup;
+	JMenu menu, submenu;
+	JRadioButtonMenuItem rbMenuItem;
+    String messageString="";
+	Rectangle[] rect; //used to select a trace
+	Rectangle[] cursors;//used to select a cursor.
+	int[][] datarr;
+	int[][] varr;
+
+	int length;
+	int cols;
+	int SelectedRoi=-1;
+	Cursor SelectedCursor=null;
+    Dimension preferredSize = new Dimension(300,100);
+    int rectWidth = 50;
+    int rectHeight = 50;
+	ArrayList rois=null;
+	boolean NAVIGATE=false;
+	static Vector FrameListeners;
+
+	double x_scale=1;  //what the xarr array gets divided by
+	double y_scale=1;  //what the yarr array gets divided by
+	int x_offset=0;    //the first frame shown on the graph
+	int y_offset;   //the y_offset for the graph
+	int x_range=0;     //the length (in frames) of the graph
+	int user_start =0; //user selectable range (sets a frame number) starting point.
+	int user_last =0;
+	Dimension lastRange;
+	boolean flipped=true;
+	Vector CursorVector;
+
+	int frame_pos=0;
+
+	Dimension windowSize;  //keeps track of the window size for resize events.
+	Dimension scaleToSize; //similar to windowSize, but used to scale the data
+
+	int maxY=Integer.MIN_VALUE;
+	int minY=Integer.MAX_VALUE;
+
+	Rectangle selectionRect;
+	boolean showSelection;
+	boolean invertSelection; //in case of a zoomout operation
+    Font font = new Font("Arial", Font.PLAIN, 10);
+    MyInternalFrame mif;
+
+
+    public NavigatorGraph(String absolutefilename, Viewer2 vw, MyInternalFrame mif, ArrayList rois) {
+     this.mif=mif;
+     this.rois=rois;
+	 if (rois==null) NAVIGATE=true;
+	 this.vw=vw;
+	 getArrayFromFile gaff=new getArrayFromFile(absolutefilename);
+	 datarr=gaff.returnArray();
+	 length=datarr.length;
+	 cols=datarr[0].length;
+	 filename=absolutefilename;
+
+	 x_range=length;
+	 varr=new int[cols][length];
+	 rect = new Rectangle[cols-1];
+	 for (int i=0;i<rect.length;i++) rect[i]=new Rectangle(0,0,10,10); //initialize with something
+
+	 windowSize=this.getSize();
+     setScaleToSize(windowSize);
+	 selectionRect=new Rectangle(0,0,10,10);//not used till later, initialized now for convenience.
+     setFocusable(true);
+     requestFocus();
+     addKeyListener(this);
+
+	 for (int i=0;i<length;i++){
+	  for (int j=1;j<cols;j++)  {
+	  if (datarr[i][j]>maxY) maxY=datarr[i][j];
+	  if (datarr[i][j]<minY) minY=datarr[i][j];
+
+	  varr[j][i]=datarr[i][j];
+
+	  }
+	 }
+	 x_offset=varr[0][0];
+
+	  popup=new JPopupMenu();
+
+	  menuListener myMenuListener=new menuListener(this);
+	   sgListener myListener = new sgListener(this);
+	  JMenuItem menuItem; //= new JMenuItem(new MediaButtons(vw,true,true,true,true,true));
+	  menuItem = new JMenuItem("jump to");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("add cursor");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+
+		menuItem = new JMenuItem("remove cursor");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+
+
+	  menuItem = new JMenuItem("range end");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("save image");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("auto cursor");
+	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("flip");
+
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("process rois");
+	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("ptolemy");
+	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("print");
+	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("save");
+	  	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("load");
+	  	  	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  menuItem = new JMenuItem("load next");
+	  	  	  	  	  menuItem.addActionListener(myMenuListener);
+	  popup.add(menuItem);
+	  popup.addSeparator();
+	          submenu = new JMenu("mode");
+	          submenu.setMnemonic(KeyEvent.VK_M);
+	          ButtonGroup group = new ButtonGroup();
+	          rbMenuItem = new JRadioButtonMenuItem("navigate");
+			          if (NAVIGATE) rbMenuItem.setSelected(true);
+			          rbMenuItem.setMnemonic(KeyEvent.VK_N);
+			          rbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+					          KeyEvent.VK_N, ActionEvent.ALT_MASK));
+
+			          group.add(rbMenuItem);
+					  rbMenuItem.addActionListener(myMenuListener);
+			          submenu.add(rbMenuItem);
+
+			          rbMenuItem = new JRadioButtonMenuItem("scale");
+					  if (!NAVIGATE) rbMenuItem.setSelected(true);
+			          rbMenuItem.setMnemonic(KeyEvent.VK_S);
+			          			          rbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+					          KeyEvent.VK_S, ActionEvent.ALT_MASK));
+			          group.add(rbMenuItem);
+                      rbMenuItem.addActionListener(myMenuListener);
+					  submenu.add(rbMenuItem);
+
+		 popup.add(submenu);
+		 popup.addSeparator();
+	          submenu = new JMenu("select");
+	          submenu.setMnemonic(KeyEvent.VK_S);
+	          ButtonGroup group2 = new ButtonGroup();
+	          for (int k=1;k<cols;k++){
+			  String col="#666666";
+			  if (rois!=null){
+			   Color tmp=((ROI)rois.get(k-1)).color;
+			   String red=Integer.toHexString(tmp.getRed());
+			   String green=Integer.toHexString(tmp.getGreen());
+			   String blue=Integer.toHexString(tmp.getBlue());
+			   col="#"+red+green+blue;
+			  }
+			  String roitag="<html><font color="+col+">ROI "+k+"</font></html>";
+			  rbMenuItem = new JRadioButtonMenuItem(roitag);
+			  rbMenuItem.addActionListener(myMenuListener);
+			  if (k==1) rbMenuItem.setSelected(true);
+			  group2.add(rbMenuItem);
+			  submenu.add(rbMenuItem);
+			  }
+
+        popup.add(submenu);
+
+		     submenu=new JMenu("scale ROI");
+			 submenu.setMnemonic(KeyEvent.VK_R);
+			 menuItem = new JMenuItem("all");
+			 menuItem.setMnemonic(KeyEvent.VK_A);
+			 menuItem.addActionListener(myMenuListener);
+			 submenu.add(menuItem);
+
+			menuItem = new JMenuItem("selected");
+			menuItem.setMnemonic(KeyEvent.VK_S);
+			menuItem.addActionListener(myMenuListener);
+			submenu.add(menuItem);
+
+			menuItem = new JMenuItem("recenter");
+						menuItem.setMnemonic(KeyEvent.VK_S);
+						menuItem.addActionListener(myMenuListener);
+			submenu.add(menuItem);
+		 popup.add(submenu);
+
+
+
+	  addMouseListener(myListener);
+      addMouseMotionListener(myListener);
+
+
+
+    }
+
+ /*framelistener stuff*/
+ public void SetFrame(int framenum){
+  frame_pos=framenum;
+  //System.out.println("notified that frame is = "+frame_pos);
+  repaint();
+ }
+
+
+/** Handle the key typed event from the text field. */
+    public void keyTyped(KeyEvent e) {
+	if (e.getKeyChar()=='n')  {
+		if (NAVIGATE) NAVIGATE=false;
+		else NAVIGATE=true;
+		repaint(); ;
+       }
+    }
+
+    /** Handle the key pressed event from the text field. */
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    /** Handle the key released event from the text field. */
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+
+public void setScaleToSize(Dimension d){
+		if (scaleToSize==null){
+		  scaleToSize=new Dimension();
+		 }
+
+		 scaleToSize.setSize(d.getWidth(), d.getHeight()-10);
+
+	}
+
+
+
+    public Dimension getPreferredSize() {
+        return preferredSize;
+    }
+
+  public void setZoom(int i){
+  	//assume compression of 5 not implementied
+	}
+
+
+  public void scaleY(int offset,double change){
+  //find selected.
+  ROI selected=(ROI)rois.get(SelectedRoi);
+  selected.scale*=change;
+  for (int i=0;i<length;i++){
+	varr[SelectedRoi-1][i]=
+	 (int)(((double)(datarr[i][SelectedRoi-1]+selected.offset)/(selected.scale)));
+
+  }
+	repaint();
+  }
+
+  public void recenterY(){
+  //determine what the maximum and minimum of varr are
+  int max=Integer.MIN_VALUE;
+  int min=Integer.MAX_VALUE;
+  int val=0;
+  ROI selected=(ROI)rois.get(SelectedRoi-1);
+  double windowMid=scaleToSize.getHeight()/2;
+
+
+  for (int i=0;i<length;i++){
+	val=varr[SelectedRoi][i];
+	if (val>max) max=val;
+	if (val<min) min=val;
+  }
+  double mid=(max+min)/2;
+  double adjust=mid-windowMid;
+  System.out.println("adjust = "+adjust+ " mid= "+mid+" windowmid= "+windowMid+" selectedRoi="+SelectedRoi);
+  //for (int i=0;i<length;i++){
+  //	varr[SelectedRoi-1][i]=varr[SelectedRoi-1][i]+(int)adjust;
+
+  //}
+ selected.offset+=(int)adjust/selected.scale;
+ repaint();
+
+  }
+
+  public void scale(int offset){
+  //set offset and multiplier for y data, in case of flipped tag...
+  		int win_height=0;
+  		int mult=1;
+  		double userscale=1.0;
+  		int useroffset=0;
+  		if (flipped){
+  		   win_height=(int)scaleToSize.getHeight();
+  		   mult=-1;
+  		}
+  		//rescale
+  		for (int i=0;i<length;i++){
+		 varr[0][i]=(int)((double)(datarr[i][0]-offset)/x_scale);
+		 for (int j=1;j<cols;j++){
+		       userscale=y_scale;
+			   useroffset=y_offset;
+			   if (rois!=null){
+			    ROI tmp=(ROI)rois.get(j-1);
+			    userscale*=tmp.scale;
+				useroffset+=tmp.offset*userscale;
+
+			   }
+  			varr[j][i]=
+				 (int)(win_height+mult*((double)(datarr[i][j]+useroffset)/(userscale)));
+
+
+  		 }
+		}
+
+	   }
+
+
+  public void rescale(){
+        setScaleToSize(windowSize);
+        int windowHeight=(int)scaleToSize.getHeight();
+		int windowWidth=(int)scaleToSize.getWidth();
+		x_scale=(double)length/(double)windowWidth;
+		y_scale=(double)(maxY-minY)/((double)windowHeight);
+		y_offset=-1*minY;
+		scale(datarr[0][0]);
+	 lastRange=new Dimension(x_offset,x_range);
+
+	 x_offset=datarr[0][0]; //used in zooming.
+	 x_range=length;
+	}
+
+	public void rescaleToSelection(){
+	   System.out.println("rescaletoselection 1");
+       if (invertSelection){
+	    rescale();
+	   }else
+	   {
+		System.out.println("rescaletoselection 2 x_offset="+x_offset+" x_scale="+x_scale+" x_range="+x_range);
+		//where in the xrange was the mouse clicked...
+	    x_offset=x_offset+(int)(selectionRect.x*x_scale);
+
+		//whats the new x_scale...
+		x_scale=x_scale / (scaleToSize.getWidth()/selectionRect.width);
+		x_range=(int)(scaleToSize.getWidth()*x_scale);
+        System.out.println("rescaletoselection 3 x_offset="+x_offset+" x_scale="+x_scale+" x_range="+x_range);
+		//report these values to Viewer2
+		vw.Navigator_start=x_offset;
+		vw.Navigator_end=x_offset+x_range;
+		scale(x_offset);
+	   }
+
+	  repaint();
+	}
+
+	public void setPoint(int x, int y){
+	// uses x only for now...
+	user_last = user_start;
+	user_start =x_offset+(int)(x*x_scale);
+	System.out.println("last="+user_last+" new="+user_start+" difference="+(user_start-user_last)+" CWRU="+(double)(user_start-user_last)*0.667 );
+	repaint();
+	}
+
+
+	//try to save the image
+	public void saveImage(){
+		BufferedImage image = new BufferedImage(
+		   (int)windowSize.getWidth(),(int)windowSize.getHeight(),BufferedImage.TYPE_BYTE_INDEXED);
+
+		Graphics2D myG = (Graphics2D)image.getGraphics();
+
+		paintComponent(myG);
+
+		ImageUtils.WriteImage("temp.bmp",image,"bmp");
+
+
+	}
+
+    //save and load are shortcuts to speed up repetative work, mostly related to cwru format where all files are
+    //similar. It saves scales, offsets, and cursors to a file, and reads them back
+    public void savesettings(){
+	try{
+	RandomAccessFile outfile=new RandomAccessFile("navigatorsettings.dat","rw");
+	outfile.writeInt((int)windowSize.getWidth());
+	outfile.writeInt((int)windowSize.getHeight());
+    outfile.writeDouble(x_scale);
+    outfile.writeDouble(y_scale);
+    outfile.writeInt(x_offset);
+    outfile.writeInt(y_offset);
+    outfile.writeInt(x_range);
+    outfile.writeInt(user_start);
+    outfile.writeInt(user_last);
+    outfile.writeInt(selectionRect.x);
+    outfile.writeInt(selectionRect.y);
+    outfile.writeInt(selectionRect.width);
+    outfile.writeInt(selectionRect.height);
+    outfile.writeInt((int)scaleToSize.getWidth());
+    outfile.writeInt((int)scaleToSize.getHeight());
+    //scaling the traces
+    for (int j=1;j<cols;j++){
+	 ROI tmp=(ROI)rois.get(j-1);
+	 outfile.writeDouble(tmp.scale);
+	 outfile.writeInt(tmp.offset);
+    }
+	if (CursorVector==null) outfile.writeInt(0);
+	else{
+		outfile.writeInt(CursorVector.size());
+		for (int i=0;i<CursorVector.size();i++){
+		Cursor tmp=(Cursor)CursorVector.elementAt(i);
+		outfile.writeInt(tmp.position.intValue());
+	}
+	}
+
+
+    }catch(IOException e){e.printStackTrace();}
+    }
+
+
+    public void loadsettings(){
+	try{
+	RandomAccessFile infile=new RandomAccessFile("navigatorsettings.dat","r");
+	windowSize.setSize(infile.readInt()+10,infile.readInt()+25);
+
+	mif.setSize(windowSize);
+    //now ensure its the same to avoid a rescale call...
+    windowSize=this.getSize();
+    x_scale=infile.readDouble();
+    y_scale=infile.readDouble();
+    x_offset=infile.readInt();
+    y_offset=infile.readInt();
+    x_range=infile.readInt();
+    user_start=infile.readInt();
+    user_last=infile.readInt();
+    selectionRect.x=infile.readInt();
+    selectionRect.y=infile.readInt();
+    selectionRect.width=infile.readInt();
+    selectionRect.height=infile.readInt();
+    scaleToSize.setSize(infile.readInt(), infile.readInt());
+    //scaling the traces
+
+
+    for (int j=1;j<cols;j++){
+	 ROI tmp=(ROI)rois.get(j-1);
+	 tmp.scale=infile.readDouble();
+	 tmp.offset=infile.readInt();
+	}
+	int numberofcursors=infile.readInt();
+	for (int i=0;i<numberofcursors;i++){
+	user_start=infile.readInt();
+	addCursor();
+	}
+
+	//NAVIGATE=true;
+	invertSelection=false;
+	//rescaleToSelection();
+    scale(x_offset);
+    }catch(IOException e){e.printStackTrace();}
+    System.out.println("out of load");
+
+   }
+
+
+   public void loadnext(){
+   //loads the next navigator graph in a series (must be there...)
+   //this is a shortcut that is usefull for CWRU type data.
+   //what is the new file name?
+
+   int firstdot=filename.indexOf(".");
+
+   System.out.println(filename.substring(firstdot-3,firstdot));
+   int newfilenumber=Integer.parseInt(filename.substring(firstdot-3,firstdot))+1;
+   String newfilename=""+newfilenumber;
+   System.out.println(newfilename+" "+newfilename.length());
+   if (newfilename.length()==1) newfilename="00"+newfilename;
+   if (newfilename.length()==2) newfilename="0"+newfilename;
+
+   String wholefilename=filename.substring(0,firstdot-3)+newfilename+filename.substring(firstdot);
+   System.out.println("wholefile="+wholefilename);
+   vw.openNavigatorWindow(wholefilename,newfilename);
+
+   /*
+   Pattern p=Pattern.compile(".");
+   String[] name=p.split(filename);
+   System.out.println("filename="+filename+" name="+name);
+   int newfilenumber=Integer.parseInt(name[0].trim())+1;
+   //zero pad if necissary
+   String newfilename=""+newfilenumber;
+   if (newfilename.length()==1) newfilename="00"+newfilename;
+   if (newfilename.length()==2) newfilename="0"+newfilename;
+   newfilename+=newfilename+".log.nav";
+   System.out.println("new file name generated... "+newfilename);
+*/
+
+   }
+
+
+	public void addCursor(){
+	// uses last user cursor.
+	 addCursor(user_start);
+    }
+
+    public void addCursor(int position){
+		CursorController cc=null;
+			if (CursorVector==null){
+				CursorVector=new Vector();
+			    //register it with the CursorController
+			    vw.ifd.openCursorControl(); //opens and initializes only if not open
+			    cc=vw.ifd.ccf.getCursorController();
+			    cc.CursorList.add(CursorVector);
+			  }
+
+			 if (cc==null) cc=vw.ifd.ccf.getCursorController();
+
+			Cursor cursor = new Cursor(filename,CursorVector.size(),0.0,0.0,0.0,position,Color.green,true);
+			CursorVector.add(cursor);
+			cc.resetColumnCount();
+	repaint();
+
+	}
+
+    public void removeCursor(){
+	 //removes the selected cursor
+	 if ((CursorVector!=null)&&(SelectedCursor!=null)){
+	 	CursorVector.removeElement(SelectedCursor);
+	 	SelectedCursor=null;
+	 	for (int i=0;i<CursorVector.size();i++){
+			//renumber
+			((Cursor)CursorVector.elementAt(i)).number=new Integer(i);
+	    }
+	 }
+	repaint();
+
+	}
+
+    public void autoCursor(int stim, int start, int end){
+
+	int[] order=new int[cols];
+	order[1]=stim;
+	int fill=2;
+	for (int k=1;k<cols;k++){
+	 if (k!=stim) {
+    	 order[fill]=k;
+		 fill++;
+	 }
+	}
+	//go to each channel in data, scan
+	double[] tmp;
+	double[] mid;
+	double[] sub;
+	double[] pre=new double[varr[0].length];
+    Vector nogo=new Vector();
+	for (int jj=1;jj<cols;jj++) {
+		     int j=order[jj];
+             System.out.println("in denoise");
+			 for (int i=0;i<pre.length;i++) pre[i]=(double)datarr[i][j];
+			 //Signal s=new Signal(JSci.maths.ArrayMath.normalize(pre));
+			Signal s=new Signal((pre));
+			 Signal denoised=s.denoiseShortPeaks(0.01,90);
+			 tmp=denoised.getValues();
+
+
+		    for (int i=0;i<tmp.length;i++) datarr[i][j]=datarr[i][j]-(int)tmp[i];
+		    for (int i=0;i<pre.length;i++) pre[i]=(double)datarr[i][j];
+
+            tmp=JSci.maths.ArrayMath.normalize(pre);
+            double[] dif=new double[tmp.length];
+            for (int i=1;i<tmp.length;i++) dif[i]=tmp[i]-tmp[i-1];
+            dif[0]=dif[1];
+            mid=JSci.maths.ArrayMath.normalize(dif);
+            double max=JSci.maths.ArrayMath.max(mid);
+            System.out.println(max);
+
+            int curspos=0;
+		    for (int i=start;i<end;i++) {
+				datarr[i][j]=(int)(Math.abs(1000*(mid[i])));
+		        if (((i-curspos)>50)&&(mid[i]>(max/4))){
+					System.out.println("checking cursor for "+j+" at pos ="+i);
+					//check the nogo regions as well
+					boolean blocked=false;
+					for (int p=0;p<nogo.size();p++){
+						int loc=((Integer)nogo.elementAt(p)).intValue();
+						if ((Math.abs(i-loc))<20)  {
+							blocked=true;
+                            System.out.println("found block at "+loc+" for j="+j+" and i="+i);
+					      }
+					    }
+
+						if (!blocked){
+			    		addCursor(i); curspos=i;
+			    		System.out.println("added a cursor for  "+j+" at pos ="+i);
+			    		if (jj==1){
+					 //try to create regions where  subsequent cursors wont go
+			    		  nogo.addElement(new Integer(i));
+			    		  System.out.println("debug: no go at "+i);
+					             }
+					   }
+     		      }
+    	      }
+
+         }
+
+	 }
+
+
+
+
+
+	public void setFrame(int x){
+	frame_pos =x;
+	repaint();
+	}
+
+	public void resetSelection(int start_x, int start_y, int end_x, int end_y){
+	 //if rectangle is inverted....
+	 if (start_x>end_x){int tmp=start_x; start_x=end_x; end_x=tmp; invertSelection=true;}
+	 else{
+	 invertSelection=false;
+	 if (start_y>end_y){int tmp=start_y; start_y=end_y; end_y=tmp;};
+	 selectionRect.x=start_x;
+	 selectionRect.y=start_y;
+	 selectionRect.width=end_x-start_x;
+	 selectionRect.height=end_y-start_y;
+	  }
+	 showSelection=true;
+	}
+
+
+    public void paintComponent(Graphics gOld) {
+        super.paintComponent(gOld);  //paint background
+		Graphics2D g=(Graphics2D)gOld;
+
+		//lazy way to detect a resize. should redo CHANGE
+		Dimension tmp=this.getSize();
+		if (!tmp.equals(windowSize)){
+			windowSize=tmp;
+			rescale();
+			}
+		g.setColor(Color.lightGray);
+		g.fillRect(0,0,(int)windowSize.getWidth(),(int)windowSize.getHeight());
+		if (lastRange != null){
+		g.setColor(Color.cyan);
+		g.drawRect((int)(lastRange.getWidth()/x_scale),0,(int)(lastRange.getHeight()/x_scale),(int)windowSize.getHeight());
+		}
+
+
+
+
+
+		for (int j=1;j<cols;j++) {
+		 if ((j==SelectedRoi)&&(!NAVIGATE)) g.setColor(Color.white);
+		 else if ((rois!=null)&&(rois.size()>0) && (!NAVIGATE)) g.setColor(((ROI)rois.get(j-1)).color);
+		 else g.setColor(Color.darkGray);
+		 g.drawPolyline(varr[0],varr[j],length);
+	    }
+
+		if ((user_start >x_offset)&&(user_start <x_offset+x_range))	{
+		 g.setColor(Color.red);
+		 g.drawLine((int)((user_start -x_offset)/x_scale),0, (int)((user_start -x_offset)/x_scale),(int)(windowSize.getHeight()-10));
+		 }
+		if ((frame_pos >x_offset)&&(frame_pos <x_offset+x_range))	{
+				 g.setColor(Color.yellow);
+				 g.drawLine((int)((frame_pos -x_offset)/x_scale),0, (int)((frame_pos -x_offset)/x_scale),(int)(windowSize.getHeight()-10));
+		 }
+		//decorate
+
+		g.setColor(Color.blue);
+		g.setFont(font);
+		String left_x = "<"+(x_offset);
+		//System.out.println(datarr[0][0]+" "+datarr[1][0]+" "+datarr[0][1]);
+		String right_x = ""+(x_offset+x_range)+">";
+		FontMetrics metrics = g.getFontMetrics();
+		int width = metrics.stringWidth(left_x);
+		int height = metrics.getHeight();
+        g.drawString( left_x, 1, (int)(windowSize.getHeight())-1 );
+		width = metrics.stringWidth(right_x);
+		height = metrics.getHeight();
+
+		for (int t=0;t<length;t++){
+				 if ((varr[0][t]>0)&&(varr[0][t]<20)){
+
+				  for (int j=1;j<cols;j++){
+				   g.setColor(Color.red);
+				   rect[j-1].setLocation(1,varr[j][t]);
+				   g.fill(rect[j-1]);
+				   g.setColor(Color.white);
+				   g.drawString(""+j,1,varr[j][t]+height/2+3);}
+				  break;
+				}
+		}
+
+
+		g.drawString( right_x, (int)(windowSize.getWidth()-width),(int)(windowSize.getHeight())-1);
+	 	if ((user_start >x_offset)&&(user_start <x_offset+x_range))	{
+	 	 g.setColor(Color.red);
+	 	 g.drawLine((int)((user_start -x_offset)/x_scale),0, (int)((user_start -x_offset)/x_scale),(int)(windowSize.getHeight()-10));
+		 String frame=""+user_start ;
+		 width=metrics.stringWidth(frame);
+		 g.setColor(Color.lightGray);
+		 g.fillRect((int)((user_start -x_offset)/x_scale-width/2),(int)(windowSize.getHeight())-height,width,height);
+		 g.setColor(Color.white);
+		 g.drawString(frame,(int)((user_start -x_offset)/x_scale-width/2),(int)(windowSize.getHeight())-1);
+		}
+        if (CursorVector!=null){
+		for (int j=0;j<CursorVector.size();j++){
+	     Cursor cursor=(Cursor)(CursorVector.elementAt(j));
+	     int cursor_position=cursor.position.intValue();
+	     if ((cursor_position >x_offset)&&(cursor_position <x_offset+x_range))	{
+		 	 	 g.setColor(Color.green);
+		 	 	 g.drawLine((int)((cursor_position -x_offset)/x_scale),0, (int)((cursor_position -x_offset)/x_scale),(int)(windowSize.getHeight()-10));
+		 		 String frame=""+cursor_position ;
+		 		 width=metrics.stringWidth(frame);
+		 		 g.setColor(Color.lightGray);
+		 		 g.fillRect((int)((cursor_position -x_offset)/x_scale-width/2),(int)(windowSize.getHeight())-height,width,height);
+		 		 g.setColor(Color.black);
+		 		 g.drawString(frame,(int)((cursor_position -x_offset)/x_scale-width/2),(int)(windowSize.getHeight())-1);
+		         cursor.SelectRect.setLocation((int)((cursor_position-x_offset)/x_scale)-5,0);
+		         g.setColor(Color.green);
+		         g.fill(cursor.SelectRect);
+		         g.setColor(Color.white);
+		         g.drawString(""+cursor.number,(int)((cursor_position-x_offset)/x_scale)-5,9);
+
+		}
+	   }
+      }//!null
+
+		//Paint a rectangle at user's dragged selection.
+        if (showSelection){
+		    g.setColor(Color.yellow);
+            g.drawRect(selectionRect.x,selectionRect.y,selectionRect.width,selectionRect.height);
+            g.setColor(Color.black);
+	        }
+	 }
+}
+
+
+
+/* actions controlled here... */
+
+class menuListener implements ActionListener{
+ NavigatorGraph sg;
+
+ public menuListener(NavigatorGraph sg){
+  this.sg=sg;
+  }
+
+ //gets popup events
+ public void actionPerformed(ActionEvent e) {
+        JMenuItem source = (JMenuItem)(e.getSource());
+        String s = "Action event detected."+ "    Event source: " + source.getText();
+        System.out.println(s);
+		if (source.getText().equals("flip")){
+		 if (sg.flipped) sg.flipped=false; else sg.flipped=true;
+		 sg.repaint(0,0,(int)sg.windowSize.getWidth(),(int) sg.windowSize.getHeight());
+		 sg.rescale();
+		}
+		if (source.getText().equals("jump to")){
+		sg.vw.JumpToFrame(sg.user_start);
+		}
+		if (source.getText().equals("add cursor")){
+		sg.addCursor();
+	    }
+	    if (source.getText().equals("remove cursor")){
+				sg.removeCursor();
+	    }
+	    if (source.getText().equals("auto cursor")){
+				sg.autoCursor(2,800,1500);
+	    }
+		if (source.getText().equals("navigate")){
+		 sg.NAVIGATE=true; sg.repaint();
+		}
+		if (source.getText().equals("scale")){
+         sg.NAVIGATE=false; sg.repaint();
+		}
+		if (source.getText().equals("save")){
+		         sg.savesettings();
+		}
+		if (source.getText().equals("load")){
+		         sg.loadsettings();
+		}
+		if (source.getText().equals("save image")){
+		 		sg.saveImage();
+		}
+		if (source.getText().equals("load next")){
+				         sg.loadnext();
+		}
+		if (source.getText().equals("selected")){
+		 if (sg.rois!=null){
+		  ((ROI)sg.rois.get(sg.SelectedRoi-1)).scale=1.0;
+		  ((ROI)sg.rois.get(sg.SelectedRoi-1)).offset=0;
+		 }
+		 sg.scale(sg.x_offset);
+		 sg.repaint();
+		 }
+		 if (source.getText().equals("recenter")){
+			 sg.recenterY();
+			 }
+		if (source.getText().equals("ptolemy")){
+		 //PtolemyPlot pp=new PtolemyPlot(sg);
+		}
+		if (source.getText().equals("print")){
+		 PrintUtilities.printComponent(sg);
+
+		}
+		if (source.getText().equals("process rois")){
+		System.out.println("trying to process "+sg.lastRange.getWidth()+" "+(int)sg.lastRange.getWidth()+sg.lastRange.getHeight());
+		sg.vw.processRois((int)sg.lastRange.getWidth(),(int)sg.lastRange.getWidth()+(int)sg.lastRange.getHeight());
+		}
+		if (source.getText().equals("all")){
+		 if (sg.rois!=null){
+		  for (int i=0;i<sg.rois.size();i++){
+		  ((ROI)sg.rois.get(i)).scale=1.0;
+		  ((ROI)sg.rois.get(i)).offset=0;
+
+		  System.out.println("Rescaled "+i);
+		  }
+		 }
+		 sg.scale(sg.x_offset);
+		 sg.repaint();
+		}
+		if (source.getText().indexOf("ROI")>0){
+		  System.out.println("found roi...");
+		  if (sg.rois!=null){
+		  for (int i=0;i<sg.rois.size();i++) {
+		   String tmp="ROI "+(i+1);
+		   System.out.println("looking for "+tmp);
+		   if (source.getText().indexOf(tmp)>0){ sg.SelectedRoi=i+1;  sg.repaint(); break;}
+
+		  }
+		 }
+		}
+   }
+
+}
+
+
+class sgListener extends MouseInputAdapter {
+	NavigatorGraph sg;
+	int x;
+	int y;
+	boolean dragged=false;
+	boolean foundselected=false;
+	boolean foundselectedcursor=false;
+	boolean CHANGESCALE=false;
+
+	public sgListener(NavigatorGraph sg){
+		   this.sg=sg;
+		}
+
+	public void mousePressed(MouseEvent e) {
+	 //check for hit in selected rect...
+	 foundselected=false;
+	 for (int i=0;i<sg.rect.length;i++){
+	  if(sg.rect[i].contains(e.getX(), e.getY())) {
+	   sg.SelectedRoi=i+1;
+	   System.out.println("Selected "+i);
+	   foundselected=true;
+	   x=e.getX();
+	   y=e.getY();
+	   sg.repaint();
+	   break;
+	  }
+	 }
+	if(sg.CursorVector!=null){
+	for (int j=0;j<sg.CursorVector.size();j++){
+	 Cursor tmp=(Cursor)sg.CursorVector.elementAt(j);
+	 if (tmp.SelectRect.contains(e.getX(), e.getY())){
+		sg.SelectedCursor=tmp;
+		foundselectedcursor=true;
+		foundselected=false;//try to avoid rescaling a trace now.
+		sg.SelectedRoi=0;//again, ensure it can't scale a trace.
+		x=e.getX();
+		y=e.getY();
+		sg.repaint();
+		break;
+	}
+    }
+   }
+	if (!((foundselected)||(foundselectedcursor))){
+	 if((e.getModifiers() & InputEvent.BUTTON1_MASK)== InputEvent.BUTTON1_MASK){
+		  x = e.getX();
+		  y = e.getY();
+		  sg.resetSelection(x,y,x+1,y+1);
+		  System.out.println("pressed");
+		  sg.repaint();
+		  }
+	    }
+	    maybeShowPopup(e);
+
+		}
+
+	  public void mouseDragged(MouseEvent e) {
+		if (sg.NAVIGATE){
+		if (!foundselected){
+		 if((e.getModifiers() & InputEvent.BUTTON1_MASK)== InputEvent.BUTTON1_MASK){
+			sg.resetSelection(x,y,e.getX(),e.getY());
+			sg.repaint();
+			dragged=true;
+		 }
+		}
+		} else
+		{
+		 if ((sg.rois!=null)&&(sg.SelectedRoi>0)){
+		  ROI tmp=(ROI)sg.rois.get(sg.SelectedRoi-1);
+	      //determine if the user is scaling in y direction or changing offset.
+          if ((CHANGESCALE) || (Math.abs(x-e.getX())>Math.abs(y-e.getY())+1)){
+
+          CHANGESCALE=true;
+
+          double oldscale=tmp.scale;
+          double y=sg.varr[sg.SelectedRoi][1];
+
+		  tmp.scale=tmp.scale*((100.0+(x-e.getX()))/100.0);
+          tmp.offset=(int)(tmp.scale/oldscale*(tmp.offset+y)+(int)y);
+
+		  }else{//change offset
+		  tmp.offset=tmp.offset+y-e.getY();
+	      }
+
+		  y=e.getY();
+		  x=e.getX();
+		  sg.scale(sg.x_offset);
+		  sg.repaint();
+
+		 }
+		if (foundselectedcursor){
+		 sg.SelectedCursor.position=new Integer(sg.x_offset+(int)(e.getX()*sg.x_scale));
+		 sg.repaint();
+
+		}
+		}
+	  }
+
+  public void mouseReleased(MouseEvent e) {
+	CHANGESCALE=false;
+	foundselectedcursor=false;
+    if (!foundselected){
+		if((e.getModifiers() & InputEvent.BUTTON1_MASK)== InputEvent.BUTTON1_MASK){
+			if (dragged){
+			sg.showSelection=false;
+			sg.rescaleToSelection();
+			}
+			else
+			{
+			sg.setPoint(x,y);
+			}
+			dragged=false;
+		}
+		maybeShowPopup(e);
+     }
+  }
+
+ private void maybeShowPopup(MouseEvent e) {
+			  System.out.println("checking popup");
+			  if((e.getModifiers() & InputEvent.BUTTON3_MASK)== InputEvent.BUTTON3_MASK){
+				  sg.popup.show(e.getComponent(),
+							 e.getX(), e.getY());
+			  }
+			}
+
+    }

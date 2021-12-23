@@ -1,0 +1,16 @@
+sequence of events to save a trace for import into photoshop
+ 
+ 1) find trace
+ 2) filter
+ 3) export data to gnuplot
+ 4) create featureless plot
+ 
+ 
+ tr=traceView(ma,200,200)
+ >	traceView[,10,10,550x600,invalid,hidden,layout=javax.swing.plaf.basic.BasicInternalFrameUI$InternalFrameLayout,alignmentX=null,alignmentY=null,border=javax.swing.plaf.metal.MetalBorders$InternalFrameBorder@2fbd59,flags=264,maximumSize=,minimumSize=,preferredSize=,closable=true,defaultCloseOperation=DISPOSE_ON_CLOSE,desktopIcon=javax.swing.JInternalFrame$JDesktopIcon[,0,0,160x31,invalid,hidden,layout=java.awt.BorderLayout,alignmentX=null,alignmentY=null,border=javax.swing.plaf.BorderUIResource$CompoundBorderUIResource@20e746,flags=8,maximumSize=,minimumSize=,preferredSize=],frameIcon=javax.swing.plaf.metal.MetalIconFactory$InternalFrameDefaultMenuIcon@f49401,iconable=true,isClosed=false,isIcon=false,isMaximum=false,isSelected=false,maximizable=true,opened=false,resizable=true,rootPane=javax.swing.JRootPane[,0,0,0x0,invalid,layout=javax.swing.JRootPane$RootLayout,alignmentX=null,alignmentY=null,border=,flags=385,maximumSize=,minimumSize=,preferredSize=],rootPaneCheckingEnabled=true,title=traceview]
+ (7)>gv.desktop.add(tr)
+ >	traceView[,10,10,550x600,hidden,layout=javax.swing.plaf.basic.BasicInternalFrameUI$InternalFrameLayout,alignmentX=null,alignmentY=null,border=javax.swing.plaf.metal.MetalBorders$InternalFrameBorder@2fbd59,flags=264,maximumSize=,minimumSize=,preferredSize=,closable=true,defaultCloseOperation=DISPOSE_ON_CLOSE,desktopIcon=javax.swing.JInternalFrame$JDesktopIcon[,0,0,160x31,invalid,hidden,layout=java.awt.BorderLayout,alignmentX=null,alignmentY=null,border=javax.swing.plaf.BorderUIResource$CompoundBorderUIResource@20e746,flags=8,maximumSize=,minimumSize=,preferredSize=],frameIcon=javax.swing.plaf.metal.MetalIconFactory$InternalFrameDefaultMenuIcon@f49401,iconable=true,isClosed=false,isIcon=false,isMaximum=false,isSelected=false,maximizable=true,opened=false,resizable=true,rootPane=javax.swing.JRootPane[,5,28,540x567,layout=javax.swing.JRootPane$RootLayout,alignmentX=null,alignmentY=null,border=,flags=385,maximumSize=,minimumSize=,preferredSize=],rootPaneCheckingEnabled=true,title=traceview]
+ (8)>tr.setVisible(1)
+ >	null
+ (9)>tr.populate()
+>	null

@@ -1,0 +1,208 @@
+package prefs;
+/** Holds a number of parameters in a group of local classes, which are accessed
+    by the program. Stores them using prefs.**/
+import java.lang.reflect.*;
+import java.util.*;
+import javax.swing.*;
+
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import javax.swing.table.AbstractTableModel;
+
+
+
+ public class PrefManager extends JPanel {
+
+ JTable table;
+ PrefsTableModel pm;
+
+
+
+ ArrayList allgroups;
+ ArrayList allfields;
+ int totalfields=0;
+
+     private PrefManager(){
+      allgroups=new ArrayList();
+      allfields=new ArrayList();
+      //setupGUI();
+     }
+
+     public void setupGUI(){
+	  pm= new PrefsTableModel();
+	  table = new JTable(pm);
+	  this.setLayout(new BorderLayout()); //unnecessary
+	  table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+	  //Create the scroll pane and add the table to it.
+	  JScrollPane scrollPane = new JScrollPane(table);
+	  //Add the scroll pane to this window.
+	  this.add(scrollPane, BorderLayout.CENTER);
+	 }
+
+     public String getString(String key){
+	 //very temporary for testing purpose
+	 String val=null;
+	 if (key.equals("CWRULocalMirrorPath")){
+		  val="c:\\downloads\\efimov\\mirror";
+        }
+	 return val;
+	 }
+
+     public void register(String header, Object obj){
+
+		ArrayList localgroup=new ArrayList();
+		localgroup.add(header);
+		try{
+			Class cls=obj.getClass();
+			Field fieldlist[] = cls.getDeclaredFields();
+
+			 for (int i = 0; i < fieldlist.length; i++) {
+			  NameValue nv=new NameValue(header,fieldlist[i].getName(),fieldlist[i].get(obj));
+		      localgroup.add(nv);
+			  allfields.add(nv);
+			  totalfields++;
+			   }
+
+			}catch (Throwable e) {System.err.println(e);e.printStackTrace();}
+         allgroups.add(localgroup);
+
+	 }
+
+
+
+    public void print(){
+	for (int i=0;i<allgroups.size();i++){
+		ArrayList al=(ArrayList)allgroups.get(i);
+		 System.out.println("\n header :"+(String)al.get(0));
+		 for (int j=1;j<al.size();j++){
+		  NameValue nv=(NameValue)al.get(j);
+		  System.out.println(nv.header+" "+nv.name+" "+nv.value);
+		 }
+	  }
+    }
+
+													public void test(Object obj){
+													try {
+
+
+
+
+													// Class cls = Class.forName(name);
+													Class cls=obj.getClass();
+													Field fieldlist[]
+													= cls.getDeclaredFields();
+													for (int i = 0; i < fieldlist.length; i++) {
+													Field fld = fieldlist[i];
+													System.out.println("name= " + fld.getName());
+
+													System.out.println("val = " + fld.get(obj));
+													System.out.println("decl class = " +
+																fld.getDeclaringClass());
+													System.out.println("type= " + fld.getType());
+													boolean isInteger=false;
+													isInteger=(fld.getType()).isInstance(Integer.TYPE);
+													if (isInteger) System.out.println("it is an int");
+													else System.out.println("not an int");
+
+													int mod = fld.getModifiers();
+													System.out.println("modifiers = "+Modifier.toString(mod));
+													System.out.println("-----");
+													}
+
+
+													}
+													catch (Throwable e) {
+													System.err.println(e);
+													e.printStackTrace();
+													}
+
+
+
+
+													}
+
+     static private PrefManager sm_instance;
+     static public PrefManager getInstance()
+     {
+         if ( sm_instance == null ) sm_instance = new PrefManager();
+         return sm_instance;
+     }
+
+
+ class PrefsTableModel extends AbstractTableModel {
+
+
+
+          public int getColumnCount() {
+  			 return 3;
+          }
+
+          public int getRowCount() {
+ 			 return totalfields;
+
+          }
+
+          public String getColumnName(int col) {
+              if (col==0) return "parameter class";
+              else if (col==1) return "parameter name";
+              else return "value";
+          }
+
+          public Object getValueAt(int row, int col) {
+ 			 Object o=null;
+ 			 NameValue nv=(NameValue)allfields.get(row);
+              if      (col==0) o=nv.header;
+              else if (col==1) o=nv.name;
+              else if (col==2) o=nv.value;
+              return o;
+  			}
+
+
+
+
+
+          //public Class getColumnClass(int c) {
+          //    return getValueAt(0, c).getClass();
+          //}
+
+
+          public boolean isCellEditable(int row, int col) {
+               return true;
+          }
+          public Class getColumnClass(int c) {
+  		            return getValueAt(0, c).getClass();
+  		        }
+
+
+  		public void setValueAt(Object value, int row, int col) {
+
+                       NameValue nv=(NameValue)allfields.get(row);
+                       nv.value=value;
+  		               fireTableCellUpdated(row, col);
+  		            }
+
+
+  	 }
+
+
+ }
+
+ class NameValue{
+	 String header;
+	 String name;
+	 Object value;
+	 NameValue(String header, Object name, Object value){
+		 this.header=header;
+		 this.name=(String)name;
+		 this.value=value;
+	 }
+ }
+
+
+
+
+
+
+

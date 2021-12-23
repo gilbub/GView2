@@ -1,0 +1,115 @@
+
+An unexpected exception has been detected in native code outside the VM.
+Unexpected Signal : EXCEPTION_ACCESS_VIOLATION occurred at PC=0x30A91590
+Function=[Unknown.]
+Library=C:\CD\programs\java\decoder\NativeSPEDecoder.dll
+
+NOTE: We are unable to locate the function name symbol for the error
+      just occurred. Please refer to release documentation for possible
+      reason and solutions.
+
+
+Current Java thread:
+	at NativeSPEDecoder.OpenImageFile(Native Method)
+	at Viewer2.<init>(Viewer2.java:404)
+	at GView.openImageFile(GView.java:567)
+	at GView.openSPE(GView.java:324)
+	at GView$8.actionPerformed(GView.java:148)
+	at javax.swing.AbstractButton.fireActionPerformed(AbstractButton.java:1767)
+	at javax.swing.AbstractButton$ForwardActionEvents.actionPerformed(AbstractButton.java:1820)
+	at javax.swing.DefaultButtonModel.fireActionPerformed(DefaultButtonModel.java:419)
+	at javax.swing.DefaultButtonModel.setPressed(DefaultButtonModel.java:257)
+	at javax.swing.AbstractButton.doClick(AbstractButton.java:289)
+	at javax.swing.plaf.basic.BasicMenuItemUI.doClick(BasicMenuItemUI.java:1092)
+	at javax.swing.plaf.basic.BasicMenuItemUI$MouseInputHandler.mouseReleased(BasicMenuItemUI.java:932)
+	at java.awt.Component.processMouseEvent(Component.java:5021)
+	at java.awt.Component.processEvent(Component.java:4818)
+	at java.awt.Container.processEvent(Container.java:1380)
+	at java.awt.Component.dispatchEventImpl(Component.java:3526)
+	at java.awt.Container.dispatchEventImpl(Container.java:1437)
+	at java.awt.Component.dispatchEvent(Component.java:3367)
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Container.java:3214)
+	at java.awt.LightweightDispatcher.processMouseEvent(Container.java:2929)
+	at java.awt.LightweightDispatcher.dispatchEvent(Container.java:2859)
+	at java.awt.Container.dispatchEventImpl(Container.java:1423)
+	at java.awt.Window.dispatchEventImpl(Window.java:1566)
+	at java.awt.Component.dispatchEvent(Component.java:3367)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:445)
+	at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:190)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:144)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:138)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:130)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:98)
+
+Dynamic libraries:
+0x00400000 - 0x00406000 	C:\CD\jdk1.4\bin\java.exe
+0x77F50000 - 0x77FF7000 	C:\WINDOWS\System32\ntdll.dll
+0x77E60000 - 0x77F46000 	C:\WINDOWS\system32\kernel32.dll
+0x77DD0000 - 0x77E5D000 	C:\WINDOWS\system32\ADVAPI32.dll
+0x78000000 - 0x78087000 	C:\WINDOWS\system32\RPCRT4.dll
+0x77C10000 - 0x77C63000 	C:\WINDOWS\system32\MSVCRT.dll
+0x6D330000 - 0x6D442000 	C:\CD\jdk1.4\jre\bin\client\jvm.dll
+0x77D40000 - 0x77DCD000 	C:\WINDOWS\system32\USER32.dll
+0x7E090000 - 0x7E0D1000 	C:\WINDOWS\system32\GDI32.dll
+0x76B40000 - 0x76B6C000 	C:\WINDOWS\System32\WINMM.dll
+0x6D1D0000 - 0x6D1D7000 	C:\CD\jdk1.4\jre\bin\hpi.dll
+0x6D300000 - 0x6D30D000 	C:\CD\jdk1.4\jre\bin\verify.dll
+0x6D210000 - 0x6D228000 	C:\CD\jdk1.4\jre\bin\java.dll
+0x6D320000 - 0x6D32D000 	C:\CD\jdk1.4\jre\bin\zip.dll
+0x6D000000 - 0x6D0F6000 	C:\CD\jdk1.4\jre\bin\awt.dll
+0x73000000 - 0x73023000 	C:\WINDOWS\System32\WINSPOOL.DRV
+0x76390000 - 0x763AC000 	C:\WINDOWS\System32\IMM32.dll
+0x4FEC0000 - 0x4FFF6000 	C:\WINDOWS\system32\ole32.dll
+0x5AD70000 - 0x5ADA4000 	C:\WINDOWS\System32\uxtheme.dll
+0x6D180000 - 0x6D1D0000 	C:\CD\jdk1.4\jre\bin\fontmanager.dll
+0x5ED00000 - 0x5EDC6000 	C:\WINDOWS\System32\OPENGL32.dll
+0x68B20000 - 0x68B3E000 	C:\WINDOWS\System32\GLU32.dll
+0x51000000 - 0x5104D000 	C:\WINDOWS\System32\DDRAW.dll
+0x73BC0000 - 0x73BC6000 	C:\WINDOWS\System32\DCIMAN32.dll
+0x27F90000 - 0x2815A000 	C:\WINDOWS\System32\ialmgicd.dll
+0x28170000 - 0x281A0000 	C:\WINDOWS\System32\ialmgdev.dll
+0x7CD00000 - 0x7D4FA000 	C:\WINDOWS\system32\shell32.dll
+0x70A70000 - 0x70AD6000 	C:\WINDOWS\system32\SHLWAPI.dll
+0x71950000 - 0x71A35000 	C:\WINDOWS\WinSxS\x86_Microsoft.Windows.Common-Controls_6595b64144ccf1df_6.0.2600.1643_x-ww_7c3a9bc6\comctl32.dll
+0x77340000 - 0x773CB000 	C:\WINDOWS\system32\comctl32.dll
+0x71C20000 - 0x71C6E000 	C:\WINDOWS\System32\netapi32.dll
+0x76670000 - 0x76757000 	C:\WINDOWS\System32\SETUPAPI.dll
+0x71B20000 - 0x71B31000 	C:\WINDOWS\system32\MPR.dll
+0x75F60000 - 0x75F66000 	C:\WINDOWS\System32\drprov.dll
+0x71C10000 - 0x71C1D000 	C:\WINDOWS\System32\ntlanman.dll
+0x71CD0000 - 0x71CE6000 	C:\WINDOWS\System32\NETUI0.dll
+0x71C90000 - 0x71CCC000 	C:\WINDOWS\System32\NETUI1.dll
+0x71C80000 - 0x71C86000 	C:\WINDOWS\System32\NETRAP.dll
+0x71BF0000 - 0x71C01000 	C:\WINDOWS\System32\SAMLIB.dll
+0x75F70000 - 0x75F79000 	C:\WINDOWS\System32\davclnt.dll
+0x75F40000 - 0x75F5F000 	C:\WINDOWS\system32\appHelp.dll
+0x75A70000 - 0x75B15000 	C:\WINDOWS\system32\USERENV.dll
+0x76990000 - 0x769B4000 	C:\WINDOWS\System32\ntshrui.dll
+0x76B20000 - 0x76B35000 	C:\WINDOWS\System32\ATL.DLL
+0x77120000 - 0x771AB000 	C:\WINDOWS\system32\OLEAUT32.dll
+0x763B0000 - 0x763F5000 	C:\WINDOWS\system32\COMDLG32.DLL
+0x7C890000 - 0x7C911000 	C:\WINDOWS\System32\CLBCATQ.DLL
+0x77050000 - 0x77115000 	C:\WINDOWS\System32\COMRes.dll
+0x77C00000 - 0x77C07000 	C:\WINDOWS\system32\VERSION.dll
+0x76620000 - 0x7666E000 	C:\WINDOWS\System32\cscui.dll
+0x76600000 - 0x7661C000 	C:\WINDOWS\System32\CSCDLL.dll
+0x71500000 - 0x715FC000 	C:\WINDOWS\System32\browseui.dll
+0x71700000 - 0x7184A000 	C:\WINDOWS\System32\shdocvw.dll
+0x73D70000 - 0x73D82000 	C:\WINDOWS\System32\shgina.dll
+0x75970000 - 0x75A62000 	C:\WINDOWS\System32\MSGINA.dll
+0x76360000 - 0x7636F000 	C:\WINDOWS\System32\WINSTA.dll
+0x30C90000 - 0x30CC1000 	C:\WINDOWS\System32\ODBC32.dll
+0x30DD0000 - 0x30DE6000 	C:\WINDOWS\System32\odbcint.dll
+0x76F90000 - 0x76FA0000 	C:\WINDOWS\System32\Secur32.dll
+0x30A90000 - 0x30AA5000 	C:\CD\programs\java\decoder\NativeSPEDecoder.dll
+0x76C90000 - 0x76CB2000 	C:\WINDOWS\system32\imagehlp.dll
+0x6D510000 - 0x6D58D000 	C:\WINDOWS\system32\DBGHELP.dll
+0x76BF0000 - 0x76BFB000 	C:\WINDOWS\System32\PSAPI.DLL
+
+Local Time = Thu Feb 23 08:45:40 2006
+Elapsed Time = 114
+#
+# The exception above was detected in native code outside the VM
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.0-b92 mixed mode)
+#

@@ -1,0 +1,110 @@
+
+Unexpected Signal : EXCEPTION_ACCESS_VIOLATION occurred at PC=0x6D3B4980
+Function=Unsafe_GetNativeByte+0x65
+Library=C:\CD\jdk1.4\jre\bin\client\jvm.dll
+
+Current Java thread:
+	at sun.misc.Unsafe.getByte(Native Method)
+	at java.nio.Bits._get(Bits.java:548)
+	at java.nio.Bits.getShortL(Bits.java:141)
+	at java.nio.Bits.getShort(Bits.java:160)
+	at java.nio.DirectByteBuffer.getShort(DirectByteBuffer.java:459)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at org.python.core.PyReflectedFunction.__call__(PyReflectedFunction.java)
+	at org.python.core.PyMethod.__call__(PyMethod.java)
+	at org.python.core.PyObject.__call__(PyObject.java)
+	at org.python.core.PyInstance.invoke(PyInstance.java)
+	at org.python.pycode._pyx23.f$0(<string>:1)
+	at org.python.pycode._pyx23.call_function(<string>)
+	at org.python.core.PyTableCode.call(PyTableCode.java)
+	at org.python.core.PyCode.call(PyCode.java)
+	at org.python.core.Py.runCode(Py.java)
+	at org.python.core.Py.exec(Py.java)
+	at org.python.util.PythonInterpreter.exec(PythonInterpreter.java)
+	at JythonViewer.run(JythonViewer.java:494)
+	at java.lang.Thread.run(Thread.java:536)
+
+Dynamic libraries:
+0x00400000 - 0x00406000 	C:\CD\jdk1.4\bin\java.exe
+0x77F50000 - 0x77FF7000 	C:\WINDOWS\System32\ntdll.dll
+0x77E60000 - 0x77F46000 	C:\WINDOWS\system32\kernel32.dll
+0x77DD0000 - 0x77E5D000 	C:\WINDOWS\system32\ADVAPI32.dll
+0x78000000 - 0x78087000 	C:\WINDOWS\system32\RPCRT4.dll
+0x77C10000 - 0x77C63000 	C:\WINDOWS\system32\MSVCRT.dll
+0x6D330000 - 0x6D442000 	C:\CD\jdk1.4\jre\bin\client\jvm.dll
+0x77D40000 - 0x77DCD000 	C:\WINDOWS\system32\USER32.dll
+0x7E090000 - 0x7E0D1000 	C:\WINDOWS\system32\GDI32.dll
+0x76B40000 - 0x76B6C000 	C:\WINDOWS\System32\WINMM.dll
+0x6D1D0000 - 0x6D1D7000 	C:\CD\jdk1.4\jre\bin\hpi.dll
+0x6D300000 - 0x6D30D000 	C:\CD\jdk1.4\jre\bin\verify.dll
+0x6D210000 - 0x6D228000 	C:\CD\jdk1.4\jre\bin\java.dll
+0x6D320000 - 0x6D32D000 	C:\CD\jdk1.4\jre\bin\zip.dll
+0x6D000000 - 0x6D0F6000 	C:\CD\jdk1.4\jre\bin\awt.dll
+0x73000000 - 0x73023000 	C:\WINDOWS\System32\WINSPOOL.DRV
+0x76390000 - 0x763AC000 	C:\WINDOWS\System32\IMM32.dll
+0x4FEC0000 - 0x4FFF6000 	C:\WINDOWS\system32\ole32.dll
+0x6D180000 - 0x6D1D0000 	C:\CD\jdk1.4\jre\bin\fontmanager.dll
+0x5ED00000 - 0x5EDC6000 	C:\WINDOWS\System32\OPENGL32.dll
+0x68B20000 - 0x68B3E000 	C:\WINDOWS\System32\GLU32.dll
+0x51000000 - 0x5104D000 	C:\WINDOWS\System32\DDRAW.dll
+0x73BC0000 - 0x73BC6000 	C:\WINDOWS\System32\DCIMAN32.dll
+0x27F30000 - 0x280FA000 	C:\WINDOWS\System32\ialmgicd.dll
+0x28110000 - 0x28140000 	C:\WINDOWS\System32\ialmgdev.dll
+0x74720000 - 0x74764000 	C:\WINDOWS\System32\MSCTF.dll
+0x7CD00000 - 0x7D4FA000 	C:\WINDOWS\system32\shell32.dll
+0x70A70000 - 0x70AD6000 	C:\WINDOWS\system32\SHLWAPI.dll
+0x71950000 - 0x71A35000 	C:\WINDOWS\WinSxS\x86_Microsoft.Windows.Common-Controls_6595b64144ccf1df_6.0.2600.1643_x-ww_7c3a9bc6\comctl32.dll
+0x77340000 - 0x773CB000 	C:\WINDOWS\system32\comctl32.dll
+0x71C20000 - 0x71C6E000 	C:\WINDOWS\System32\netapi32.dll
+0x76670000 - 0x76757000 	C:\WINDOWS\System32\SETUPAPI.dll
+0x71B20000 - 0x71B31000 	C:\WINDOWS\system32\MPR.dll
+0x75F60000 - 0x75F66000 	C:\WINDOWS\System32\drprov.dll
+0x71C10000 - 0x71C1D000 	C:\WINDOWS\System32\ntlanman.dll
+0x71CD0000 - 0x71CE6000 	C:\WINDOWS\System32\NETUI0.dll
+0x71C90000 - 0x71CCC000 	C:\WINDOWS\System32\NETUI1.dll
+0x71C80000 - 0x71C86000 	C:\WINDOWS\System32\NETRAP.dll
+0x71BF0000 - 0x71C01000 	C:\WINDOWS\System32\SAMLIB.dll
+0x75F70000 - 0x75F79000 	C:\WINDOWS\System32\davclnt.dll
+0x75F40000 - 0x75F5F000 	C:\WINDOWS\system32\appHelp.dll
+0x76990000 - 0x769B4000 	C:\WINDOWS\System32\ntshrui.dll
+0x76B20000 - 0x76B35000 	C:\WINDOWS\System32\ATL.DLL
+0x75A70000 - 0x75B15000 	C:\WINDOWS\system32\USERENV.dll
+0x77120000 - 0x771AB000 	C:\WINDOWS\system32\OLEAUT32.dll
+0x605D0000 - 0x605D8000 	C:\WINDOWS\System32\mslbui.dll
+0x30360000 - 0x30367000 	C:\Program Files\Fujitsu\Fujitsu Hotkey Utility\VFuj02b1.dll
+0x763B0000 - 0x763F5000 	C:\WINDOWS\system32\COMDLG32.DLL
+0x7C890000 - 0x7C911000 	C:\WINDOWS\System32\CLBCATQ.DLL
+0x77050000 - 0x77115000 	C:\WINDOWS\System32\COMRes.dll
+0x77C00000 - 0x77C07000 	C:\WINDOWS\system32\VERSION.dll
+0x76620000 - 0x7666E000 	C:\WINDOWS\System32\cscui.dll
+0x76600000 - 0x7661C000 	C:\WINDOWS\System32\CSCDLL.dll
+0x71500000 - 0x715FC000 	C:\WINDOWS\System32\browseui.dll
+0x5AD70000 - 0x5ADA4000 	C:\WINDOWS\System32\UxTheme.dll
+0x71700000 - 0x7184A000 	C:\WINDOWS\System32\shdocvw.dll
+0x75970000 - 0x75A62000 	C:\WINDOWS\System32\MSGINA.dll
+0x76360000 - 0x7636F000 	C:\WINDOWS\System32\WINSTA.dll
+0x30B00000 - 0x30B31000 	C:\WINDOWS\System32\ODBC32.dll
+0x30C40000 - 0x30C56000 	C:\WINDOWS\System32\odbcint.dll
+0x76F90000 - 0x76FA0000 	C:\WINDOWS\System32\Secur32.dll
+0x6D2D0000 - 0x6D2DD000 	C:\CD\jdk1.4\jre\bin\net.dll
+0x71AD0000 - 0x71AD8000 	C:\WINDOWS\System32\WSOCK32.dll
+0x71AB0000 - 0x71AC5000 	C:\WINDOWS\System32\WS2_32.dll
+0x71AA0000 - 0x71AA8000 	C:\WINDOWS\System32\WS2HELP.dll
+0x6D2E0000 - 0x6D2E8000 	C:\CD\jdk1.4\jre\bin\nio.dll
+0x76C90000 - 0x76CB2000 	C:\WINDOWS\system32\imagehlp.dll
+0x6D510000 - 0x6D58D000 	C:\WINDOWS\system32\DBGHELP.dll
+0x76BF0000 - 0x76BFB000 	C:\WINDOWS\System32\PSAPI.DLL
+
+Local Time = Tue Jul 11 17:59:28 2006
+Elapsed Time = 551
+#
+# HotSpot Virtual Machine Error : EXCEPTION_ACCESS_VIOLATION
+# Error ID : 4F530E43505002D3
+# Please report this error at
+# http://java.sun.com/cgi-bin/bugreport.cgi
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.0-b92 mixed mode)
+#

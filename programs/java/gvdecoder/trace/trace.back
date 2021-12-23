@@ -1,0 +1,177 @@
+package trace;
+
+import java.util.prefs.*;
+
+/** Trace holds the integer data of the line to be plotted, as
+    well as scaling relations   and some data about the raw data
+    it scales to. Trace can be made part of TraceGroup,
+    which controls x axis information
+**/
+public class Trace{
+//holds various scales for transforming datarr to varr.
+int data_ymax= Integer.MIN_VALUE;
+int data_ymin= Integer.MAX_VALUE;
+int trace_ymax=Integer.MIN_VALUE;
+int trace_ymin=Integer.MAX_VALUE;
+int length=0;
+
+
+
+public double y_scale =1.0;
+public double y_offset=0.0;
+
+double user_Yscale=1.0; //suplied by user to scale data if the values
+						//are requested. Not used in actual scaling of the
+						//trace, just reporting.
+
+public int start_xrange=0; //user selected indexes to scale to.
+public int end_xrange=0;   //user selected indexes to scale to.
+
+boolean isSelected=false;
+boolean debug=true; //prints status on command line.
+
+
+public int[] y_values; //contains a copy of the scaled data.
+
+public int[] raw_y;    //is a pointer to the raw data.
+
+/** constructor takes an array of data for x and for y values, then calculates the
+    max and min of this data for future use **/
+public Trace( int[] raw_y){
+
+
+ 	this.raw_y=raw_y; //pointers to the original data
+ 	length=raw_y.length;
+
+ 	y_values=new int[length];
+
+ 	int yval=0;
+ 	for (int i=0;i<length;i++){
+	//determine max and min of raw data.
+		 yval=raw_y[i];
+		 if (yval>data_ymax) data_ymax=yval;
+		 if (yval<data_ymin) data_ymin=yval;
+	}//end for
+   if (debug) System.out.println("NavigatorGraph.trace: data_ymax="+data_ymax+" data_ymin="+data_ymin);
+   }//end constructor.
+
+
+/** scales the y and x values of its internal data set to
+    fit within min_yval and max_yval, for the range of
+    values starting at start_xrange and ending at end_xrange **/
+
+public void scale(int start_xrange, /*starting x index of raw data*/
+				  int end_xrange,	/*ending  x index of raw data*/
+				  int min_yval, 	/*start target y val*/
+				  int max_yval		/*end target y val*/
+				  ){
+//find the maxima and minima of the raw data within the ranges given
+	this.start_xrange=start_xrange;
+	this.end_xrange=end_xrange;
+
+	int local_ymax=Integer.MIN_VALUE;
+	int local_ymin=Integer.MAX_VALUE;
+	for (int i=start_xrange;i<end_xrange;i++){
+	  int yval=raw_y[i];
+	  if (yval>local_ymax) local_ymax=yval;
+	  if (yval<local_ymin) local_ymin=yval;
+    }
+    if (debug) System.out.println("NavigatorGraph.trace.scale: local_ymax="+local_ymax+" local_ymin="+local_ymin);
+    //the scale and offset depend on min_yval and max_yval
+    double ydatarange=local_ymax-local_ymin;
+    double yreqrange =max_yval-min_yval;
+    y_scale= yreqrange/ydatarange;
+
+    //the offset is calculated based on where the minimum datapoint is, and sets this to
+    //the min point.
+    int minpt=(int)((double)local_ymin*y_scale);
+
+    //offset is added to each scaled val, so calculate accordingly
+    y_offset=min_yval-minpt;
+
+    if (debug) System.out.println("NavigatorGraph.trace.scale: minpt="+minpt);
+    if (debug) System.out.println("NavigatorGraph.trace.scale: y_offset="+y_offset+" y_scale="+y_scale);
+
+    reCalculateYValues();
+
+}
+
+
+/** based on mouse movements, if the mouse moved from oldloc to new loc
+    move the trace accordingly **/
+
+public void shiftOffset(int oldloc, int newloc){
+	y_offset+=(newloc-oldloc);
+	reCalculateYValues();
+}
+
+/** arbitrary method for adjusting the scale based on the distance a
+	mouse is moved. **/
+public void adjustScale(int oldloc, int newloc){
+	//arbitrary rule for translating scale.
+	double scalefactor=1.0+(double)(newloc-oldloc)/100;
+	//first, remember the location of the first scaled point
+	int oldypos=y_values[start_xrange];
+	//modify the scale
+	y_scale=y_scale*scalefactor;
+	//the value of the new point is now...
+	int newypos=(int)(raw_y[start_xrange]*y_scale+y_offset);
+	//want to reset y_offset so that newypos=oldypos
+	y_offset=y_offset-(newypos-oldypos);
+
+	reCalculateYValues();
+
+}
+
+public void reCalculateYValues(){
+ for (int i=0;i<length;i++){
+  y_values[i]=(int)((double)raw_y[i]*y_scale+y_offset);
+ }
+}
+
+public int getZero(){
+	return y_values[start_xrange];
+
+}
+
+public void printYValues(){
+	//for debugging only
+	System.out.println("\n debug data out");
+	for (int i=0;i<length;i++){
+		System.out.println(raw_y[i]+"\t"+y_values[i]);
+	 }
+}
+
+
+public static void main(String[] args){
+
+int[] tst={100,90,80,70,60,50,60,70,80,90};
+int[] x={1,2,3,4,5,6,7,8,9,10};
+
+Trace t=new Trace(tst);
+System.out.println("istantiated");
+t.printYValues();
+
+System.out.println("scaled");
+t.scale(0,9,0,1000);
+t.printYValues();
+
+t.scale(5,10,0,1000);
+t.printYValues();
+
+t.scale(0,10,500,600);
+t.printYValues();
+
+
+/*
+t.shiftOffset(0,10);
+t.printYValues();
+
+t.adjustScale(20,0);
+t.printYValues();
+*/
+
+
+}
+
+}
